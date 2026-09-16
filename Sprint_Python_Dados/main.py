@@ -181,10 +181,28 @@ def ordenar_sessoes():
 ordenar_sessoes()
 
 def mostrar_estatisticas():
+    
     if escolha == 5:
-        contagem = len(sessoes)
+        #conta quantas sessoes tem
+        contagem_sessao = len(sessoes)
 
-        print("Registros existentes:", contagem)
+        #esse codigo consegue ve o total de energia que a lsita(sessoes) tem,
+        #quanto de dinheiro tem na lista
+        total_receita = 0
+        total_energia = 0
+        for sessao in sessoes:
+            total_energia += sessao.energia
+            total_receita += sessao.custo
+
+
+        print()
+        print("========================================")
+        print("         ESTATISTICAS                   ")
+        print()
+        print("Sessões existentes:", contagem_sessao)
+        print("Total de energia: ", total_energia)
+        print("Receita total: ", total_receita)
+        print("========================================")
 
 mostrar_estatisticas()
         
