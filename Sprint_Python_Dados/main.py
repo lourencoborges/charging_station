@@ -179,3 +179,12 @@ def ordenar_sessoes():
 
 
 ordenar_sessoes()
+
+def mostrar_estatisticas():
+    if escolha == 5:
+        contagem = len(sessoes)
+
+        print("Registros existentes:", contagem)
+
+mostrar_estatisticas()
+        
