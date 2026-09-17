@@ -227,11 +227,11 @@ def mostrar_estatisticas():
     
 
 
-
+#menu principal
 while True:
     escolha = main()
     if escolha == 1:
-        cadastro = cadastrar_sessao()
+        cadastrar_sessao()
     elif escolha == 2:
         listar_sessoes()
     elif escolha == 3:
