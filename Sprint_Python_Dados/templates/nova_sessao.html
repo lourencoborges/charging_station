@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nova Sessão</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Nova sessão de recarga</h1>
+
+        <form>
+
+            <label>ID:</label>
+            <input type="number" name="id">
+
+            <label>Energia:</label>
+            <input type="number" name="energia" step="0.01">
+
+            <label>Tempo:</label>
+            <input type="number" name="tempo">
+
+            <label>Custo:</label>
+            <input type="number" name="custo" step="0.01">
+
+            <button type="submit">Cadastrar sessão</button>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

@@ -7,6 +7,10 @@ app = Flask(__name__)
 def inicio():
     return render_template("index.html")
 
+@app.route("/nova-sessao")
+def nova_sessao():
+    return render_template("nova_sessao.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
