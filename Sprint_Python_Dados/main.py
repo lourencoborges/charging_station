@@ -44,7 +44,7 @@ class Sessao:
 sessoes = [
     Sessao(2, 50, 60, 30),
     Sessao(1, 70, 80, 40),
-    Sessao(3, 40, 20, 10)
+    Sessao(3, 40, 20, 50)
 ]
 
     
@@ -194,14 +194,24 @@ def mostrar_estatisticas():
             total_energia += sessao.energia
             total_receita += sessao.custo
 
+        #verifica se existe receita ou uma lista para não ocorrer uma divisão por 0
+        if contagem_sessao == 0:
+            print()
+            print("Erro, nao existe receita ou uma sessão")
+            return
+        else:
+            #esse vai calcular o custo medio das sessoes
+            custo_medio = total_receita / contagem_sessao
+
 
         print()
         print("========================================")
-        print("         ESTATISTICAS                   ")
+        print("         ESTATISTÍCAS                   ")
         print()
         print("Sessões existentes:", contagem_sessao)
         print("Total de energia: ", total_energia)
         print("Receita total: ", total_receita)
+        print("O custo medio é: ", round(custo_medio, 2))
         print("========================================")
 
 mostrar_estatisticas()
