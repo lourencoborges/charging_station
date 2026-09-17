@@ -1,19 +1,6 @@
 from flask import Flask, render_template
 
-app = Flask(__name__)
 
-
-@app.route("/")
-def inicio():
-    return render_template("index.html")
-
-@app.route("/nova-sessao")
-def nova_sessao():
-    return render_template("nova_sessao.html")
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
 
 
@@ -245,18 +232,21 @@ def mostrar_estatisticas():
 
 
 #menu principal
-while True:
-    escolha = main()
-    if escolha == 1:
-        cadastrar_sessao()
-    elif escolha == 2:
-        listar_sessoes()
-    elif escolha == 3:
-        buscar_sessao()
-    elif escolha == 4:
-        ordenar_sessoes()
-    elif escolha == 5:
-        mostrar_estatisticas()        
-    elif escolha == 6:
-        break
-        
+app = Flask(__name__)
+
+
+@app.route("/")
+def inicio():
+    return render_template("index.html")
+
+@app.route("/nova-sessao")
+def nova_sessao():
+    return render_template("nova_sessao.html")
+
+@app.route("/listar-sessoes")
+def listar_sessoes_web():
+    return render_template("listar_sessoes.html", sessoes=sessoes)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

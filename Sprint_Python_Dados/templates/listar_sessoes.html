@@ -1,0 +1,26 @@
+<body>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <div class="container">
+
+        {% for sessao in sessoes %}
+
+            <div class="sessao">
+
+                <p>ID: {{ sessao.id }}</p>
+                <p>Energia: {{ sessao.energia }}</p>
+                <p>Tempo: {{ sessao.tempo }}</p>
+                <p>Custo: {{ sessao.custo }}</p>
+
+            </div>
+
+        {% endfor %}
+
+        <a href="/">
+            <button>Voltar ao menu</button>
+        </a>
+
+    </div>
+
+</body>
