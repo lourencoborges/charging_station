@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 
 
@@ -239,8 +239,16 @@ app = Flask(__name__)
 def inicio():
     return render_template("index.html")
 
-@app.route("/nova-sessao")
+@app.route("/nova-sessao", methods=["GET", "POST"])
 def nova_sessao():
+    if request.method == "POST":
+        id = int(request.form["id"])
+        energia = float(request.form["energia"])
+        tempo = int(request.form["tempo"])
+        custo = float(request.form["custo"])
+
+        sessoes.append(Sessao(id, energia, tempo, custo))
+
     return render_template("nova_sessao.html")
 
 @app.route("/listar-sessoes")
