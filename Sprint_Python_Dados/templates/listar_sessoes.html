@@ -12,16 +12,18 @@
 
     <div class="container">
 
+        <h1>Lista de sessões</h1>
+
         {% for sessao in sessoes %}
 
-            <div class="sessao">
+        <div class="sessao">
 
-                <p>ID: {{ sessao.id }}</p>
-                <p>Energia: {{ sessao.energia }}</p>
-                <p>Tempo: {{ sessao.tempo }}</p>
-                <p>Custo: {{ sessao.custo }}</p>
+            <p>ID: {{ sessao.id }}</p>
+            <p>Energia: {{ sessao.energia }}</p>
+            <p>Tempo: {{ sessao.tempo }}</p>
+            <p>Custo: {{ sessao.custo }}</p>
 
-            </div>
+        </div>
 
         {% endfor %}
 
@@ -33,4 +35,4 @@
 
 </body>
 
-<html>
+</html>
