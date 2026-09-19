@@ -239,21 +239,53 @@ app = Flask(__name__)
 def inicio():
     return render_template("index.html")
 
+
+
 @app.route("/nova-sessao", methods=["GET", "POST"])
 def nova_sessao():
     if request.method == "POST":
-        id = int(request.form["id"])
-        energia = float(request.form["energia"])
+        try:
+            id = int(request.form["id"])
+            if id <= 0:
+                return "O ID deve ser maior que zero."
+        except ValueError:
+            return "Digite um ID válido."
+
+        for sessao in sessoes:
+            if id == sessao.id:
+                return "Esse ID já existe."
+
+
+
+        try:
+            energia = float(request.form["energia"])
+            if energia <= 0:
+                return "A energia deve ser maior que zero."
+
+        except ValueError:
+            return "Digite uma energia válida."
+
+
+
         tempo = int(request.form["tempo"])
+        if tempo <= 0:
+            return "O tempo deve ser maior que zero."
+
+
         custo = float(request.form["custo"])
+        if custo <= 0:
+            return "O custo deve ser maior que zero."
+
 
         sessoes.append(Sessao(id, energia, tempo, custo))
-
     return render_template("nova_sessao.html")
+
+
 
 @app.route("/listar-sessoes")
 def listar_sessoes_web():
     return render_template("listar_sessoes.html", sessoes=sessoes)
+
 
 
 if __name__ == "__main__":
