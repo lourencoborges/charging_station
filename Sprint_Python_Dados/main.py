@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, flash
 
 
 #apenas o python, a web esta no final da pagina
+#desconsiderar esse codigo considerar apenas apartir da linha ...
 def main():
     print("""
     =====================================
@@ -19,6 +20,8 @@ def main():
     6 - Encerrar
     """)
 
+    #atende todas as possibilidades de erro fazendo com que a pergunta se repetisse de novo toda vez que
+    #o usuario digitar errado
     while True:
         try:
             escolha_usuario = int(input("Escolha: "))
@@ -36,14 +39,16 @@ def main():
 
 
 
-
+#a classe para podemos criar varias sessoes como mostra o codigo abaixo
 class Sessao:
     def __init__(self, id, energia, tempo, custo):
         self.id = id
         self.energia = energia 
         self.tempo = tempo
         self.custo = custo
-        
+
+
+#uma lista(sessoes) que dentro tem a classe Sessao
 sessoes = [
     Sessao(2, 50, 60, 30),
     Sessao(1, 70, 80, 40),
@@ -233,15 +238,17 @@ def mostrar_estatisticas():
 #menu principal da web
 app = Flask(__name__)
 
+#essa linha de codigo deixa ultilizar o flash()
 app.secret_key = "chave-secreta"
 
 
+#deixa eu abrir o index.html
 @app.route("/")
 def inicio():
     return render_template("index.html")
 
 
-
+#deixa eu abrir o nova_sessao.html, onde eu posso adicionar as novas sessões
 @app.route("/nova-sessao", methods=["GET", "POST"])
 def nova_sessao():
     if request.method == "POST":
@@ -296,7 +303,7 @@ def nova_sessao():
     return render_template("nova_sessao.html")
 
 
-
+#deixa abrir a lsita
 @app.route("/listar-sessoes")
 def listar_sessoes_web():
     if len(sessoes) == 0:
@@ -329,6 +336,7 @@ def buscar_sessao_web():
     return render_template("buscar_sessao.html")
 
 
+#codigo que ordena a lista(sessoes)
 @app.route("/ordenar-sessoes", methods=["GET", "POST"])
 def ordenar_sessoes_web():
 
@@ -347,6 +355,7 @@ def ordenar_sessoes_web():
     return render_template("ordenar_sessoes.html")
 
 
+#deixa ver a estatistica da lista(sessoes)
 @app.route("/estatisticas")
 def estatisticas_web():
 
@@ -389,6 +398,6 @@ def estatisticas_web():
                               menor_consumo=menor_consumo)
 
 
-
+#inicia um servidor local
 if __name__ == "__main__":
     app.run(debug=True)
