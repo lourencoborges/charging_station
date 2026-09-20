@@ -12,7 +12,12 @@
 
     <div class="container">
 
-        <h1>Lista de sessões</h1>
+        <h1>Sessões cadastradas</h1>
+        
+        <p> {{mensagem}} </p>
+
+        <p>Total de sessões: {{ sessoes|length }}</p>
+
 
         {% for sessao in sessoes %}
 
@@ -21,7 +26,7 @@
             <p>ID: {{ sessao.id }}</p>
             <p>Energia: {{ sessao.energia }}</p>
             <p>Tempo: {{ sessao.tempo }}</p>
-            <p>Custo: {{ sessao.custo }}</p>
+            <p>Custo: R$ {{ sessao.custo }}</p>
 
         </div>
 

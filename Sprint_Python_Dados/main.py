@@ -270,6 +270,7 @@ def nova_sessao():
             flash("Digite uma energia válida.")
             return render_template("nova_sessao.html")
 
+
         try:
             tempo = int(request.form["tempo"])
             if tempo <= 0:
@@ -278,6 +279,7 @@ def nova_sessao():
         except ValueError:
             flash("Digite um tempo válido")
             return render_template("nova_sessao.html")
+
 
         try:
             custo = float(request.form["custo"])
@@ -297,7 +299,17 @@ def nova_sessao():
 
 @app.route("/listar-sessoes")
 def listar_sessoes_web():
-    return render_template("listar_sessoes.html", sessoes=sessoes)
+    if len(sessoes) == 0:
+        mensagem = "Nenhuma sessão cadastrada."
+    else:
+        mensagem = ""
+
+    return render_template("listar_sessoes.html", sessoes=sessoes, mensagem=mensagem)
+
+
+@app.route("/buscar-sessao")
+def buscar_sessao_web():
+    return render_template("buscar_sessao.html")
 
 
 
