@@ -266,15 +266,21 @@ def nova_sessao():
             return "Digite uma energia válida."
 
 
+        try:
+            tempo = int(request.form["tempo"])
+            if tempo <= 0:
+                return "O tempo deve ser maior que zero."
 
-        tempo = int(request.form["tempo"])
-        if tempo <= 0:
-            return "O tempo deve ser maior que zero."
+        except ValueError:
+            return "Digite um tempo válido"
 
+        try:
+            custo = float(request.form["custo"])
+            if custo <= 0:
+                return "O custo deve ser maior que zero."
 
-        custo = float(request.form["custo"])
-        if custo <= 0:
-            return "O custo deve ser maior que zero."
+        except ValueError:
+            return "Digite um custo valido"
 
 
         sessoes.append(Sessao(id, energia, tempo, custo))
