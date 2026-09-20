@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar sessão</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Buscar sessão</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <label>Digite o ID:</label>
+            <input type="number" name="id">
+
+            <button type="submit">Buscar sessão</button>
+
+        </form>
+
+        {% if sessao %}
+            <p>ID: {{ sessao.id }}</p>
+            <p>Energia: {{ sessao.energia }}</p>
+            <p>Tempo: {{ sessao.tempo }}</p>
+            <p>Custo: R$ {{ sessao.custo }}</p>
+        {% endif %}
+
+
+        <div>
+            <a href="/">
+                <button>Voltar ao menu</button>
+            </a>
+
+        </div>
+    </div>
+
+    
+</body>
+</html>

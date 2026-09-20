@@ -307,8 +307,25 @@ def listar_sessoes_web():
     return render_template("listar_sessoes.html", sessoes=sessoes, mensagem=mensagem)
 
 
-@app.route("/buscar-sessao")
+@app.route("/buscar-sessao", methods=["GET", "POST"])
 def buscar_sessao_web():
+    if request.method == "POST":
+        try:
+            id_busca = int(request.form["id"])
+        except ValueError:
+            flash("Digite um ID válido.")
+            return render_template("buscar_sessao.html")
+
+        encontrou=False
+        for sessao in sessoes:
+            if sessao.id == id_busca:
+                encontrou=True
+                return render_template("buscar_sessao.html", sessao=sessao)
+
+        if not encontrou:
+            flash("ID não encontrado.")
+            return render_template("buscar_sessao.html")
+
     return render_template("buscar_sessao.html")
 
 
