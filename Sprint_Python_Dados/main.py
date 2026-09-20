@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 
 
 
 
 
-
-
+#apenas o python, a web esta no final da pagina
 def main():
     print("""
     =====================================
@@ -231,8 +230,10 @@ def mostrar_estatisticas():
     
 
 
-#menu principal
+#menu principal da web
 app = Flask(__name__)
+
+app.secret_key = "chave-secreta"
 
 
 @app.route("/")
@@ -246,44 +247,50 @@ def nova_sessao():
     if request.method == "POST":
         try:
             id = int(request.form["id"])
-            if id <= 0:
-                return "O ID deve ser maior que zero."
-        except ValueError:
-            return "Digite um ID válido."
 
+            if id <= 0:
+                flash("O ID deve ser maior que zero.")
+                return render_template("nova_sessao.html")
+        except ValueError:
+            flash("Digite um ID válido.")
+            return render_template("nova_sessao.html")
+        
         for sessao in sessoes:
             if id == sessao.id:
-                return "Esse ID já existe."
-
+                flash("Esse ID já existe.")
+                return render_template("nova_sessao.html")
 
 
         try:
             energia = float(request.form["energia"])
             if energia <= 0:
-                return "A energia deve ser maior que zero."
-
+                flash("A energia deve ser maior que zero.")
+                return render_template("nova_sessao.html")
         except ValueError:
-            return "Digite uma energia válida."
-
+            flash("Digite uma energia válida.")
+            return render_template("nova_sessao.html")
 
         try:
             tempo = int(request.form["tempo"])
             if tempo <= 0:
-                return "O tempo deve ser maior que zero."
-
+                flash("O tempo deve ser maior que zero")
+                return render_template("nova_sessao.html")
         except ValueError:
-            return "Digite um tempo válido"
+            flash("Digite um tempo válido")
+            return render_template("nova_sessao.html")
 
         try:
             custo = float(request.form["custo"])
             if custo <= 0:
-                return "O custo deve ser maior que zero."
-
+                flash("O custo deve ser maior que zero.")
+                return render_template("nova_sessao.html")
         except ValueError:
-            return "Digite um custo valido"
+            flash("Digite um custo válido")
+            return render_template("nova_sessao.html")
 
 
         sessoes.append(Sessao(id, energia, tempo, custo))
+        flash("Sessão cadastrada com sucesso!")
     return render_template("nova_sessao.html")
 
 
