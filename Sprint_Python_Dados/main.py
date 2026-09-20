@@ -329,6 +329,24 @@ def buscar_sessao_web():
     return render_template("buscar_sessao.html")
 
 
+@app.route("/ordenar-sessoes", methods=["GET", "POST"])
+def ordenar_sessoes_web():
+
+    if request.method == "POST":
+        n = len(sessoes)
+
+        for i in range(n):
+            for j in range(0, n - i - 1):
+
+                if sessoes[j].id > sessoes[j + 1].id:
+                    sessoes[j], sessoes[j + 1] = sessoes[j + 1], sessoes[j]
+
+        flash("Ordenação completa")
+        return render_template("ordenar_sessoes.html")
+
+    return render_template("ordenar_sessoes.html")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

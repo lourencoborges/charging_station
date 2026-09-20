@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ordenar sessão</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Ordenar sessão</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <form method="POST">
+
+        <button type="submit">Ordenar sessão</button>
+
+        </form>
+
+         <div>
+
+            <a href="/">
+                <button>Voltar ao menu</button>
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+    
+</body>
+</html>
