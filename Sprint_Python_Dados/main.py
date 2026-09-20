@@ -347,6 +347,48 @@ def ordenar_sessoes_web():
     return render_template("ordenar_sessoes.html")
 
 
+@app.route("/estatisticas")
+def estatisticas_web():
+
+    total_sessoes = len(sessoes)
+    total_energia = 0
+    custo_total = 0
+    custo_medio = 0
+    maior_consumo = sessoes[0].energia
+    menor_consumo = sessoes[0].energia
+
+
+    for sessao in sessoes:
+        if sessao.energia > maior_consumo:
+            maior_consumo = sessao.energia
+        elif menor_consumo > sessao.energia:
+            menor_consumo = sessao.energia
+
+
+    for sessao in sessoes:
+        total_energia += sessao.energia
+        custo_total += sessao.custo
+
+
+    if total_sessoes == 0:
+            mensagem = "Nenhuma sessão cadastrada."
+    else:
+        mensagem = ""
+        custo_medio = custo_total / total_sessoes
+
+
+    
+
+    return render_template("estatisticas.html",
+                            sessoes=sessoes,
+                            mensagem=mensagem,
+                              total_energia=total_energia,
+                              custo_total=custo_total,
+                              custo_medio=custo_medio,
+                              maior_consumo=maior_consumo,
+                              menor_consumo=menor_consumo)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

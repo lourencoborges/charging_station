@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR>
+<head>
+
+    <meta charset="UTF-8">
+    <title>Estatísticas</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Estatísticas</h1>
+
+        <p> {{mensagem}} </p>
+
+        <p>Total de sessões: {{ sessoes|length }}</p>
+        <p>Total de energia: {{ total_energia }}</p>
+        <p>Total de custo: {{ custo_total }}</p>
+        <p>Custo medio: {{ custo_medio }}</p>
+        <p>Maior consumo: {{ maior_consumo }}</p>
+        <p>Menor consumo: {{ menor_consumo }}</p>
+
+
+        <a href="/">
+            <button>Voltar ao menu</button>
+        </a>
+
+    </div>
+
+
+    
+</body>
+</html>
