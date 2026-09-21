@@ -1,5 +1,15 @@
 # Estruturas de Dados e Evolução do Simulador de Recarga em Python
 
+
+### Integrantes:
+<p>
+Lourenço Borges da Silva — RM 569515<br>
+Gustavo Curis de Francisco — RM 569704<br>
+Caio César Portela França — RM 573127<br>
+Tiago Pimentel Muniz — RM 574148<br>
+Davi Teodoro Novais — RM 571022
+</p>
+
 ## 1. Sobre o projeto
 
 Este projeto é a evolução do simulador de sessões de recarga desenvolvido nas etapas anteriores. Nesta Sprint, o simulador deixou de trabalhar apenas com uma única recarga e passou a funcionar como um pequeno **Sistema de Gerenciamento de Estação de Recarga**.
