@@ -14,37 +14,140 @@
 
         <h1>Nova sessão de recarga</h1>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <p id="mensagem-erro"></p>
 
-        <form method="POST">
+        <form id="form-recarga" method="POST">
 
-            <label>ID:</label>
-            <input type="number" name="id">
+            <div id="campos-recarga">
 
-            <label>Energia kWh:</label>
-            <input type="number" name="energia" step="0.01">
+                <div class="campo-recarga">
+                    <label>ID:</label>
+                    <input type="number" name="id" min="1" required>
+                </div>
 
-            <label>Tempo min:</label>
-            <input type="number" name="tempo">
+                <div class="campo-recarga">
+                    <label>Energia kWh:</label>
+                    <input type="number" name="energia" step="0.01" required>
+                </div>
 
-            <label>Custo R$:</label>
-            <input type="number" name="custo" step="0.01">
+                <div class="campo-recarga">
+                    <label>Tempo min:</label>
+                    <input type="number" name="tempo" required>
+                </div>
 
-            <button type="submit">Cadastrar sessão</button>
+                <button type="submit">Iniciar recarga</button>
+
+            </div>
 
         </form>
-        
-        <a href="/">
-            <button>Voltar ao menu</button>
+
+        <div id="status-recarga" style="display: none;">
+
+            <h2 id="texto-status">Em andamento</h2>
+
+            <button id="outra-recarga" style="display: none;">
+                Iniciar outra recarga
+            </button>
+
+        </div>
+
+        <a id="voltar-menu" href="/">
+            <button type="button">Voltar ao menu</button>
         </a>
 
     </div>
+
+
+    <script>
+
+        const mensagemErro = document.getElementById("mensagem-erro");
+        const form = document.getElementById("form-recarga");
+        const campos = document.getElementById("campos-recarga");
+        const statusRecarga = document.getElementById("status-recarga");
+        const textoStatus = document.getElementById("texto-status");
+        const outraRecarga = document.getElementById("outra-recarga");
+        const voltarMenu = document.getElementById("voltar-menu");
+
+
+        form.addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            mensagemErro.textContent = "";
+
+            const dados = new FormData(form);
+
+            try {
+
+                const resposta = await fetch("/nova-sessao", {
+                    method: "POST",
+                    body: dados,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+                const resultado = await resposta.json();
+
+            if (resultado.erro) {
+                    mensagemErro.textContent = resultado.erro;
+                    return;
+                }
+
+                if (!resposta.ok) {
+                    throw new Error("Erro ao iniciar a recarga.");
+                }
+
+                // Esconde os campos
+                campos.style.display = "none";
+
+                // Esconde os botões de navegação
+                voltarMenu.style.display = "none";
+
+                // Mostra o status
+                statusRecarga.style.display = "block";
+
+                textoStatus.textContent = "Em andamento";
+
+
+                // Aguarda 5 segundos
+                setTimeout(function() {
+
+                    textoStatus.textContent = "Concluída";
+
+                    // Mostra o botão para uma nova recarga
+                    outraRecarga.style.display = "inline-block";
+
+                }, 5000);
+
+            } catch (erro) {
+
+                alert("Não foi possível iniciar a recarga.");
+
+            }
+
+        });
+
+
+        outraRecarga.addEventListener("click", function() {
+
+            // Limpa os campos
+            form.reset();
+
+            // Mostra novamente os campos
+            campos.style.display = "block";
+
+            // Esconde o status
+            statusRecarga.style.display = "none";
+
+            // Esconde o botão novamente
+            outraRecarga.style.display = "none";
+
+            // Mostra o botão voltar
+            voltarMenu.style.display = "inline-block";
+
+        });
+
+    </script>
 
 </body>
 

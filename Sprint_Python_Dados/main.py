@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, jsonify
+import threading
+import time
 
 
 #a classe para podemos criar varias sessoes como mostra o codigo abaixo
@@ -8,6 +10,7 @@ class Sessao:
         self.energia = energia 
         self.tempo = tempo
         self.custo = custo
+        self.status = "Em andamento"
 
 
 #uma lista(sessoes) que dentro tem a classe Sessao
@@ -16,6 +19,18 @@ sessoes = [
     Sessao(1, 70, 80, 40),
     Sessao(3, 40, 20, 50)
 ]
+
+
+#funcao de tarifa
+def calcular_tarifa(energia):
+    tarifa = 0.85
+    return energia * tarifa
+
+#funcao de espera na hora de iniciar recarga
+def finalizar_recarga(sessao):
+    time.sleep(5)
+    sessao.status = "Concluida"
+
 
 #menu principal da web
 app = Flask(__name__)
@@ -33,28 +48,45 @@ def inicio():
 #deixa eu abrir o nova_sessao.html, onde eu posso adicionar as novas sessões
 @app.route("/nova-sessao", methods=["GET", "POST"])
 def nova_sessao():
+
     if request.method == "POST":
+
         try:
             id = int(request.form["id"])
 
             if id <= 0:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return jsonify({"erro": "O ID deve ser maior que zero."})
+
                 flash("O ID deve ser maior que zero.")
                 return render_template("nova_sessao.html")
+
         except ValueError:
             flash("Digite um ID válido.")
             return render_template("nova_sessao.html")
-        
+
+
+        # Verifica se o ID já existe
         for sessao in sessoes:
             if id == sessao.id:
+
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return jsonify({"erro": "Esse ID já existe."})
+
                 flash("Esse ID já existe.")
                 return render_template("nova_sessao.html")
 
 
         try:
             energia = float(request.form["energia"])
+
             if energia <= 0:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return jsonify({"erro": "A energia deve ser maior que zero."})
+
                 flash("A energia deve ser maior que zero.")
                 return render_template("nova_sessao.html")
+
         except ValueError:
             flash("Digite uma energia válida.")
             return render_template("nova_sessao.html")
@@ -62,27 +94,46 @@ def nova_sessao():
 
         try:
             tempo = int(request.form["tempo"])
+
             if tempo <= 0:
-                flash("O tempo deve ser maior que zero")
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return jsonify({"erro": "O tempo deve ser maior que zero."})
+
+                flash("O tempo deve ser maior que zero.")
                 return render_template("nova_sessao.html")
+
         except ValueError:
-            flash("Digite um tempo válido")
+            flash("Digite um tempo válido.")
             return render_template("nova_sessao.html")
 
 
-        try:
-            custo = float(request.form["custo"])
-            if custo <= 0:
-                flash("O custo deve ser maior que zero.")
-                return render_template("nova_sessao.html")
-        except ValueError:
-            flash("Digite um custo válido")
-            return render_template("nova_sessao.html")
+        # Calcula o custo automaticamente
+        custo = calcular_tarifa(energia)
+
+        # Cria a sessão
+        sessao = Sessao(id, energia, tempo, custo)
+
+        # Adiciona à lista
+        sessoes.append(sessao)
+
+        # Inicia a recarga
+        threading.Thread(
+            target=finalizar_recarga,
+            args=(sessao,)
+        ).start()
+
+        flash("Recarga iniciada! Aguarde 5 segundos.")
+
+        # Resposta para o JavaScript
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"status": "Em andamento"})
+
+        return render_template("nova_sessao.html", sessao=sessao)
 
 
-        sessoes.append(Sessao(id, energia, tempo, custo))
-        flash("Sessão cadastrada com sucesso!")
+    # Quando simplesmente abrimos a página
     return render_template("nova_sessao.html")
+
 
 
 #deixa abrir a lsita

@@ -92,3 +92,57 @@ form button {
     text-align: left;
 }
 
+/* Formulário de nova sessão */
+
+#form-recarga {
+    width: 100%;
+    margin: 30px 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#campos-recarga {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.campo-recarga {
+    width: 220px;
+    margin: 0 auto 10px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.campo-recarga label {
+    width: 220px;
+    margin-bottom: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.campo-recarga input {
+    width: 220px;
+    height: 42px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#campos-recarga > button {
+    display: block;
+    margin: 20px auto 0 auto;
+}
+
+#voltar-menu {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#mensagem-erro {
+    color: #ff6b6b;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
+    min-height: 20px;
+}
