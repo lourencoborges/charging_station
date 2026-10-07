@@ -2,6 +2,11 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #0f0f0f;
+    background-image: linear-gradient(rgba(8, 18, 19, 0.72), rgba(8, 18, 19, 0.72)), url("/assets/background.jpeg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: white;
     margin: 0;
     min-height: 100vh;
@@ -53,7 +58,7 @@ button:hover {
     width: 400px;
     padding: 40px;
     border-radius: 15px;
-    background-color: #1a1a1a;
+    background-color: rgba(26, 26, 26, 0.92);
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
 }
 

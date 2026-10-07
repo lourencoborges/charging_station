@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Resumo final</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>Resumo final</h1>
+        <p>{{ mensagem }}</p>
+        <p>Total de sessões: {{ total_sessoes }}</p>
+        <p>Energia total: {{ total_energia|round(2) }} kWh</p>
+        <p>Custo total: R$ {{ custo_total|round(2) }}</p>
+        <p>Custo médio: R$ {{ custo_medio|round(2) }}</p>
+
+        {% for sessao in sessoes %}
+        <section class="sessao">
+            <p>Sessão {{ sessao.id }} | {{ sessao.status }}</p>
+            <p>Energia: {{ sessao.energia|round(2) }} kWh</p>
+            <p>Tempo: {{ sessao.tempo }} min</p>
+            <p>Potência média: {{ sessao.potencia_media_kw }} kW</p>
+            <p>Tarifa: R$ {{ sessao.custo|round(2) }}</p>
+        </section>
+        {% endfor %}
+
+        <a href="/">
+            <button type="button">Voltar ao menu</button>
+        </a>
+    </main>
+</body>
+</html>

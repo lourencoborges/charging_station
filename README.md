@@ -46,11 +46,14 @@ Cada sessão de recarga é representada por uma classe `Sessao`.
 
 ```python
 class Sessao:
-    def __init__(self, id, energia, tempo, custo):
+    TARIFA_POR_KWH = 0.85
+
+    def __init__(self, id, energia, tempo):
         self.id = id
-        self.energia = energia
-        self.tempo = tempo
-        self.custo = custo
+        self.energia = float(energia)
+        self.tempo = int(tempo)
+        self.potencia_media_kw = self.calcular_potencia_media()
+        self.custo = self.calcular_custo()
 ```
 
 A classe possui quatro informações principais:
@@ -58,7 +61,10 @@ A classe possui quatro informações principais:
 - `id`: identificação da sessão;
 - `energia`: quantidade de energia da recarga;
 - `tempo`: tempo da recarga;
-- `custo`: custo da sessão.
+- `potencia_media_kw`: potência média calculada pela energia e pelo tempo;
+- `custo`: calculado pela tarifa de R$ 0,85 por kWh.
+
+A potência média usa energia em kWh e tempo em horas. O custo é arredondado para centavos.
 
 As sessões são armazenadas em uma lista:
 
@@ -89,6 +95,7 @@ A aplicação possui páginas para:
 - buscar uma sessão;
 - ordenar as sessões;
 - visualizar as estatísticas.
+- consultar um resumo final das sessões e dos custos.
 
 A interface foi construída com **HTML** e estilizada com **CSS**.
 
@@ -102,7 +109,8 @@ O Flask é responsável por receber as requisições, executar a lógica em Pyth
 ├── /listar-sessoes
 ├── /buscar-sessao
 ├── /ordenar-sessoes
-└── /estatisticas
+├── /estatisticas
+└── /relatorio
 ```
 
 Essa evolução mantém a lógica solicitada pelo professor e acrescenta uma forma mais completa de interação com o sistema.
@@ -118,7 +126,8 @@ A página de cadastro permite informar:
 - ID;
 - energia;
 - tempo;
-- custo.
+
+O custo é calculado automaticamente com a tarifa de R$ 0,85 por kWh.
 
 Antes de cadastrar a sessão, o sistema realiza validações.
 
@@ -128,7 +137,6 @@ São impedidos:
 - IDs duplicados;
 - energia menor ou igual a zero;
 - tempo menor ou igual a zero;
-- custo menor ou igual a zero;
 - entradas que não correspondem ao tipo esperado.
 
 As mensagens de erro são apresentadas ao usuário por meio do sistema de mensagens do Flask.
@@ -169,6 +177,10 @@ O sistema percorre as sessões uma por uma até encontrar o ID procurado.
 Quando a sessão é encontrada, seus dados são apresentados. Caso contrário, o usuário recebe a mensagem de que o ID não foi encontrado.
 
 A busca foi implementada explicitamente, conforme solicitado no enunciado, sem utilizar uma função pronta para substituir o algoritmo.
+
+### 5.4 Resumo final
+
+A página `/relatorio` apresenta a quantidade de sessões, a energia total, o custo total e o custo médio. Também lista os dados e o status de cada sessão cadastrada.
 
 ---
 
@@ -356,18 +368,22 @@ A organização utilizada no projeto é composta pela aplicação Python, pelos 
 ```text
 charging_station/
 │
-├── main.py
 ├── README.md
 │
 └── Sprint_Python_Dados/
     │
+        ├── main.py
+        ├── models.py
+        ├── assets/
+        │   └── EV Charging Infrastructure Growth, Challenges & Future Trend.jpeg
     ├── templates/
     │   ├── index.html
     │   ├── nova_sessao.html
     │   ├── listar_sessoes.html
     │   ├── buscar_sessao.html
     │   ├── ordenar_sessoes.html
-    │   └── estatisticas.html
+        │   ├── estatisticas.html
+        │   └── relatorio.html
     │
     └── static/
         └── style.css

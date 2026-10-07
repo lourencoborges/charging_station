@@ -1,30 +1,17 @@
-from flask import Flask, render_template, request, flash, jsonify
+from flask import Flask, render_template, request, flash, jsonify, send_from_directory
+from pathlib import Path
+from models import Sessao
 import threading
 import time
 
 
-#a classe para podemos criar varias sessoes como mostra o codigo abaixo
-class Sessao:
-    def __init__(self, id, energia, tempo, custo):
-        self.id = id
-        self.energia = energia 
-        self.tempo = tempo
-        self.custo = custo
-        self.status = "Em andamento"
-
-
 #uma lista(sessoes) que dentro tem a classe Sessao
 sessoes = [
-    Sessao(2, 50, 60, 30),
-    Sessao(1, 70, 80, 40),
-    Sessao(3, 40, 20, 50)
+    Sessao(2, 50, 60, status="Concluída"),
+    Sessao(1, 70, 80, status="Concluída"),
+    Sessao(3, 40, 20, status="Concluída")
 ]
 
-
-#funcao de tarifa
-def calcular_tarifa(energia):
-    tarifa = 0.85
-    return energia * tarifa
 
 #funcao de espera na hora de iniciar recarga
 def finalizar_recarga(sessao):
@@ -37,6 +24,49 @@ app = Flask(__name__)
 
 #essa linha de codigo deixa ultilizar o flash()
 app.secret_key = "chave-secreta"
+
+
+@app.route("/assets/background.jpeg")
+def imagem_fundo():
+    caminho_assets = Path(app.root_path) / "assets"
+    return send_from_directory(
+        caminho_assets,
+        "EV Charging Infrastructure Growth, Challenges & Future Trend.jpeg"
+    )
+
+
+def obter_estatisticas():
+    total_sessoes = len(sessoes)
+    total_energia = 0
+    custo_total = 0
+    maior_consumo = 0
+    menor_consumo = 0
+
+    if sessoes:
+        maior_consumo = sessoes[0].energia
+        menor_consumo = sessoes[0].energia
+
+        for sessao in sessoes:
+            total_energia += sessao.energia
+            custo_total += sessao.custo
+
+            if sessao.energia > maior_consumo:
+                maior_consumo = sessao.energia
+            if sessao.energia < menor_consumo:
+                menor_consumo = sessao.energia
+
+    custo_medio = custo_total / total_sessoes if total_sessoes else 0
+    mensagem = "" if total_sessoes else "Nenhuma sessão cadastrada."
+
+    return {
+        "mensagem": mensagem,
+        "total_sessoes": total_sessoes,
+        "total_energia": total_energia,
+        "custo_total": custo_total,
+        "custo_medio": custo_medio,
+        "maior_consumo": maior_consumo,
+        "menor_consumo": menor_consumo,
+    }
 
 
 #deixa eu abrir o index.html
@@ -107,11 +137,8 @@ def nova_sessao():
             return render_template("nova_sessao.html")
 
 
-        # Calcula o custo automaticamente
-        custo = calcular_tarifa(energia)
-
         # Cria a sessão
-        sessao = Sessao(id, energia, tempo, custo)
+        sessao = Sessao(id, energia, tempo)
 
         # Adiciona à lista
         sessoes.append(sessao)
@@ -122,13 +149,15 @@ def nova_sessao():
             args=(sessao,)
         ).start()
 
-        flash("Recarga iniciada! Aguarde 5 segundos.")
-
         # Resposta para o JavaScript
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({"status": "Em andamento"})
 
-        return render_template("nova_sessao.html", sessao=sessao)
+        return render_template(
+            "nova_sessao.html",
+            sessao=sessao,
+            mensagem="Recarga iniciada! Aguarde 5 segundos."
+        )
 
 
     # Quando simplesmente abrimos a página
@@ -182,7 +211,7 @@ def ordenar_sessoes_web():
                 if sessoes[j].id > sessoes[j + 1].id:
                     sessoes[j], sessoes[j + 1] = sessoes[j + 1], sessoes[j]
 
-        flash("Ordenação completa")
+        flash("Ordenação manual (Bubble Sort) completa.")
         return render_template("ordenar_sessoes.html")
 
     return render_template("ordenar_sessoes.html")
@@ -191,44 +220,16 @@ def ordenar_sessoes_web():
 #deixa ver a estatistica da lista(sessoes)
 @app.route("/estatisticas")
 def estatisticas_web():
-
-    total_sessoes = len(sessoes)
-    total_energia = 0
-    custo_total = 0
-    custo_medio = 0
-    maior_consumo = sessoes[0].energia
-    menor_consumo = sessoes[0].energia
-
-
-    for sessao in sessoes:
-        if sessao.energia > maior_consumo:
-            maior_consumo = sessao.energia
-        elif menor_consumo > sessao.energia:
-            menor_consumo = sessao.energia
-
-
-    for sessao in sessoes:
-        total_energia += sessao.energia
-        custo_total += sessao.custo
-
-
-    if total_sessoes == 0:
-            mensagem = "Nenhuma sessão cadastrada."
-    else:
-        mensagem = ""
-        custo_medio = custo_total / total_sessoes
-
-
-    
-
     return render_template("estatisticas.html",
                             sessoes=sessoes,
-                            mensagem=mensagem,
-                              total_energia=total_energia,
-                              custo_total=custo_total,
-                              custo_medio=custo_medio,
-                              maior_consumo=maior_consumo,
-                              menor_consumo=menor_consumo)
+                            **obter_estatisticas())
+
+
+@app.route("/relatorio")
+def relatorio_web():
+    return render_template("relatorio.html",
+                           sessoes=sessoes,
+                           **obter_estatisticas())
 
 
 #inicia um servidor local

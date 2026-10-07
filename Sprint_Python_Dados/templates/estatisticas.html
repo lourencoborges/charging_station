@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR>
+<html lang="pt-BR">
 <head>
 
     <meta charset="UTF-8">
@@ -16,12 +16,12 @@
 
         <p> {{mensagem}} </p>
 
-        <p>Total de sessões: {{ sessoes|length }}</p>
-        <p>Total de energia:  {{ total_energia }} kWh</p>
-        <p>Total de custo:  {{ custo_total }} R$</p>
-        <p>Custo medio:  {{ custo_medio }} R$</p>
-        <p>Maior consumo:  {{ maior_consumo }} kWh</p>
-        <p>Menor consumo:  {{ menor_consumo }} kWh</p>
+        <p>Total de sessões: {{ total_sessoes }}</p>
+        <p>Total de energia: {{ total_energia|round(2) }} kWh</p>
+        <p>Total de custo: R$ {{ custo_total|round(2) }}</p>
+        <p>Custo médio: R$ {{ custo_medio|round(2) }}</p>
+        <p>Maior consumo: {{ maior_consumo|round(2) }} kWh</p>
+        <p>Menor consumo: {{ menor_consumo|round(2) }} kWh</p>
 
 
         <a href="/">
