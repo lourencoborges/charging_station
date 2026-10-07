@@ -82,13 +82,15 @@ charging_station/
 
 ## Como executar
 
-É necessário ter Python 3 instalado. No terminal, a partir da pasta raiz do projeto, instale o Flask e inicie a aplicação:
+É necessário ter Python 3 instalado. No terminal, a partir da pasta raiz do projeto, instale as dependências e inicie a aplicação:
 
 ```bash
-python -m pip install Flask
+python -m pip install -r requirements.txt
 cd Sprint_Python_Dados
 python main.py
 ```
+
+O arquivo `requirements.txt` lista as dependências externas necessárias para executar o projeto.
 
 Abra no navegador o endereço local mostrado no terminal, normalmente `http://127.0.0.1:5000/`.
 
