@@ -23,7 +23,7 @@ Na página inicial, a pessoa escolhe entre a área do usuário e a área do ADM.
 - **Calcular energia estimada:** usa a capacidade da bateria e a diferença entre a porcentagem final e inicial.
 - **Calcular custo e potência:** cada sessão calcula o custo pela tarifa de R$ 0,85 por kWh e a potência média em kW.
 - **Listar sessões:** exibe os registros cadastrados e informa quando a lista está vazia.
-- **Buscar sessão:** localiza a sessão mais recente da placa informada usando busca sequencial.
+- **Buscar sessão:** permite consultar a sessão mais recente registrada ou buscar uma sessão específica pela placa.
 - **Ordenar sessões:** organiza a lista por placa crescente usando Bubble Sort implementado no código.
 - **Consultar estatísticas e relatório:** apresenta quantidade de sessões, energia total, custo total e médio, maior e menor consumo, além dos dados das sessões.
 - **Validar entradas:** trata placas inválidas ou já cadastradas, porcentagens fora do intervalo, capacidade e energia não positivas, duração inválida, entradas não numéricas e buscas sem resultado.
@@ -110,7 +110,7 @@ Abra no navegador o endereço local mostrado no terminal, normalmente `http://12
 | `/usuario/iniciar` | Início de uma recarga do usuário |
 | `/usuario/finalizar/<id>` | Finalização e registro do tempo |
 | `/listar-sessoes` | Listagem de sessões |
-| `/buscar-sessao` | Busca por placa |
+| `/buscar-sessao` | Busca da sessão mais recente ou busca específica pela placa |
 | `/ordenar-sessoes` | Ordenação por placa |
 | `/estatisticas` | Estatísticas das sessões |
 | `/relatorio` | Resumo e dados das sessões |

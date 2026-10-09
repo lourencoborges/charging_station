@@ -282,18 +282,31 @@ def listar_sessoes_web():
 @app.route("/buscar-sessao", methods=["GET", "POST"])
 def buscar_sessao_web():
     sessao = None
+    tipo_busca = None
     if request.method == "POST":
-        placa_busca, erro_placa = validar_placa(request.form.get("placa", ""))
-        if erro_placa:
-            flash(erro_placa)
-            return render_template("buscar_sessao.html", sessao=None)
-        # Busca sequencial pela placa do veículo.
-        for item in sessoes:
-            if item.placa == placa_busca and (sessao is None or item.id > sessao.id):
-                sessao = item
-        if sessao is None:
-            flash("Placa não encontrada.")
-    return render_template("buscar_sessao.html", sessao=sessao)
+        tipo_busca = request.form.get("acao")
+        if tipo_busca == "recente":
+            # Procura a sessão com o maior ID interno, atribuído na ordem de criação.
+            for item in sessoes:
+                if sessao is None or item.id > sessao.id:
+                    sessao = item
+            if sessao is None:
+                flash("Ainda não há sessões cadastradas.")
+        elif tipo_busca == "especifica":
+            placa_busca, erro_placa = validar_placa(request.form.get("placa", ""))
+            if erro_placa:
+                flash(erro_placa)
+            else:
+                # Busca sequencial pela placa específica do veículo.
+                for item in sessoes:
+                    if item.placa == placa_busca:
+                        sessao = item
+                        break
+                if sessao is None:
+                    flash("Nenhuma sessão encontrada para essa placa.")
+        else:
+            flash("Escolha uma forma de busca.")
+    return render_template("buscar_sessao.html", sessao=sessao, tipo_busca=tipo_busca)
 
 
 @app.route("/ordenar-sessoes", methods=["GET", "POST"])

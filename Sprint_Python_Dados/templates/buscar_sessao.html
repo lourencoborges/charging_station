@@ -8,18 +8,29 @@
 </head>
 <body>
     <main class="container">
-        <h1>Buscar por placa</h1>
+        <h1>Buscar sessão</h1>
         {% with messages = get_flashed_messages() %}
-            {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+            {% for message in messages %}<p role="status">{{ message }}</p>{% endfor %}
         {% endwith %}
+
         <form method="POST">
-            <label for="placa">Placa do veículo</label>
-            <input id="placa" name="placa" minlength="7" maxlength="7" pattern="[A-Za-z0-9]{7}" title="Use 7 letras ou números." required>
-            <button type="submit">Buscar sessão mais recente</button>
+            <p>Encontre a última sessão registrada no sistema.</p>
+            <button type="submit" name="acao" value="recente">Buscar sessão mais recente</button>
         </form>
+
+        <form method="POST">
+            <label for="placa">Placa para buscar uma sessão específica</label>
+            <input id="placa" name="placa" minlength="7" maxlength="7" pattern="[A-Za-z0-9]{7}" title="Use 7 letras ou números." required>
+            <button type="submit" name="acao" value="especifica">Buscar sessão pela placa</button>
+        </form>
+
         {% if sessao %}
         <section class="sessao">
+            <h2>{% if tipo_busca == "recente" %}Sessão mais recente{% else %}Sessão encontrada{% endif %}</h2>
             <p>Placa: {{ sessao.placa }}</p>
+            {% if sessao.bateria_inicial is not none %}
+            <p>Bateria: {{ sessao.bateria_inicial }}% → {{ sessao.bateria_final }}%</p>
+            {% endif %}
             <p>Energia: {{ sessao.energia }} kWh</p>
             <p>Tempo carregando: {{ "%02d:%02d:%02d"|format(sessao.tempo_segundos // 3600, (sessao.tempo_segundos % 3600) // 60, sessao.tempo_segundos % 60) }} (hh:mm:ss)</p>
             <p>Potência média: {{ sessao.potencia_media_kw }} kW</p>
@@ -27,6 +38,7 @@
             <p>Status: {{ sessao.status }}</p>
         </section>
         {% endif %}
+
         <a href="{{ url_for('area_admin') }}"><button type="button">Voltar à área do ADM</button></a>
     </main>
 </body>
