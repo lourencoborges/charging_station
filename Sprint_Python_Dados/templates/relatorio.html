@@ -16,16 +16,19 @@
 
         {% for sessao in sessoes %}
         <section class="sessao">
-            <p>Sessão {{ sessao.id }} | {{ sessao.status }}</p>
+            <p>Placa {{ sessao.placa }} | {{ sessao.status }}</p>
+            {% if sessao.bateria_inicial is not none %}
+            <p>Bateria: {{ sessao.bateria_inicial }}% → {{ sessao.bateria_final }}%</p>
+            {% endif %}
             <p>Energia: {{ sessao.energia|round(2) }} kWh</p>
-            <p>Tempo: {{ sessao.tempo }} min</p>
+            <p>Tempo carregando: {{ "%02d:%02d:%02d"|format(sessao.tempo_segundos // 3600, (sessao.tempo_segundos % 3600) // 60, sessao.tempo_segundos % 60) }} (hh:mm:ss)</p>
             <p>Potência média: {{ sessao.potencia_media_kw }} kW</p>
             <p>Tarifa: R$ {{ sessao.custo|round(2) }}</p>
         </section>
         {% endfor %}
 
-        <a href="/">
-            <button type="button">Voltar ao menu</button>
+        <a href="/admin">
+            <button type="button">Voltar à área do ADM</button>
         </a>
     </main>
 </body>

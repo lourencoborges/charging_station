@@ -13,18 +13,20 @@ Davi Teodoro Novais — RM 571022
 
 Este projeto é uma aplicação web para simular e acompanhar sessões de recarga de veículos elétricos. Ele foi desenvolvido em Python como parte da Sprint de Estruturas de Dados, com uma interface feita em Flask, HTML e CSS.
 
-O sistema permite cadastrar sessões, consultar e listar os registros, ordenar por ID e acompanhar estatísticas e um relatório. A lista de sessões fica em memória durante a execução da aplicação; os dados não são salvos em arquivo ou banco de dados.
+Na página inicial, a pessoa escolhe entre a área do usuário e a área do ADM. O sistema permite cadastrar sessões, consultar e listar os registros, ordenar por placa e acompanhar estatísticas e um relatório. A lista fica em memória durante a execução; os dados não são salvos em arquivo ou banco de dados.
 
 ## Funcionalidades
 
-- **Cadastrar sessão:** recebe ID, energia consumida em kWh e duração em minutos. O ID deve ser positivo e único; energia e duração também devem ser maiores que zero.
+- **Área do ADM:** mantém cadastro manual de sessões, listagem, busca por placa, ordenação, estatísticas e relatório. O cadastro manual salva imediatamente, sem espera.
+- **Sessões aleatórias:** na área do ADM, gera e cadastra uma sessão com placa ainda não usada, energia e duração aleatórias; na área do usuário, gera uma placa livre e os dados de bateria e inicia a recarga simulada.
+- **Área do usuário:** registra placa, capacidade da bateria em kWh, porcentagem inteira inicial e porcentagem inteira desejada. A carga simulada avança 3 pontos percentuais por segundo. Ao alcançar o objetivo, fica como concluída; o botão permite finalizar antes da hora; ao sair da página com uma recarga ativa, o sistema tenta registrá-la como incompleta. O tempo é guardado em segundos inteiros.
+- **Calcular energia estimada:** usa a capacidade da bateria e a diferença entre a porcentagem final e inicial.
 - **Calcular custo e potência:** cada sessão calcula o custo pela tarifa de R$ 0,85 por kWh e a potência média em kW.
-- **Simular recarga:** novas sessões começam com o status “Em andamento” e passam para “Concluida” após cinco segundos.
 - **Listar sessões:** exibe os registros cadastrados e informa quando a lista está vazia.
-- **Buscar sessão:** localiza um registro pelo ID usando busca sequencial.
-- **Ordenar sessões:** organiza a lista por ID crescente usando Bubble Sort implementado no código.
+- **Buscar sessão:** localiza a sessão mais recente da placa informada usando busca sequencial.
+- **Ordenar sessões:** organiza a lista por placa crescente usando Bubble Sort implementado no código.
 - **Consultar estatísticas e relatório:** apresenta quantidade de sessões, energia total, custo total e médio, maior e menor consumo, além dos dados das sessões.
-- **Validar entradas:** trata valores inválidos, IDs repetidos e buscas sem resultado.
+- **Validar entradas:** trata placas inválidas ou já cadastradas, porcentagens fora do intervalo, capacidade e energia não positivas, duração inválida, entradas não numéricas e buscas sem resultado.
 
 Ao iniciar a aplicação, há três sessões de exemplo já cadastradas. Como os dados são mantidos somente em memória, alterações feitas durante a execução são perdidas quando o servidor é encerrado.
 
@@ -32,10 +34,11 @@ Ao iniciar a aplicação, há três sessões de exemplo já cadastradas. Como os
 
 Cada registro é um objeto da classe `Sessao`, definida em `Sprint_Python_Dados/models.py`. Seus atributos incluem:
 
-- `id`: identificador da sessão;
+- `placa`: identificação do veículo;
 - `energia`: energia consumida, em kWh;
-- `tempo`: duração, em minutos;
+- `tempo_segundos`: duração medida da recarga em segundos;
 - `status`: estado da recarga;
+- `bateria_inicial`, `bateria_final` e `capacidade_bateria_kwh`: dados informados pelo usuário;
 - `potencia_media_kw`: energia dividida pelo tempo convertido em horas;
 - `custo`: energia multiplicada pela tarifa de R$ 0,85 por kWh.
 
@@ -45,11 +48,11 @@ Os objetos são armazenados na lista `sessoes`, em `main.py`. A tarifa está def
 
 ### Busca sequencial
 
-Na busca por ID, o sistema percorre a lista e compara o identificador de cada sessão com o informado. No pior caso, visita todos os `n` registros; portanto, sua complexidade de tempo é **O(n)**.
+Na busca por placa, o sistema percorre a lista e compara a placa de cada sessão com a informada. No pior caso, visita todos os `n` registros; portanto, sua complexidade de tempo é **O(n)**.
 
 ### Bubble Sort
 
-A ordenação compara elementos adjacentes e troca suas posições quando estão fora de ordem. Com dois laços sobre a lista, sua complexidade de tempo é **O(n²)**. O algoritmo está implementado diretamente na rota `/ordenar-sessoes`.
+A ordenação compara placas de elementos adjacentes e troca suas posições quando estão fora de ordem. Com dois laços sobre a lista, sua complexidade de tempo é **O(n²)**. O algoritmo está implementado diretamente na rota `/ordenar-sessoes`.
 
 ## Tecnologias
 
@@ -72,6 +75,8 @@ charging_station/
     │   └── style.css
     └── templates/
         ├── index.html
+        ├── admin.html
+        ├── usuario.html
         ├── nova_sessao.html
         ├── listar_sessoes.html
         ├── buscar_sessao.html
@@ -99,10 +104,14 @@ Abra no navegador o endereço local mostrado no terminal, normalmente `http://12
 | Rota | Uso |
 | --- | --- |
 | `/` | Página inicial |
-| `/nova-sessao` | Cadastro de sessão |
+| `/admin` | Área do ADM |
+| `/usuario` | Área do usuário |
+| `/nova-sessao` | Cadastro manual do ADM |
+| `/usuario/iniciar` | Início de uma recarga do usuário |
+| `/usuario/finalizar/<id>` | Finalização e registro do tempo |
 | `/listar-sessoes` | Listagem de sessões |
-| `/buscar-sessao` | Busca por ID |
-| `/ordenar-sessoes` | Ordenação por ID |
+| `/buscar-sessao` | Busca por placa |
+| `/ordenar-sessoes` | Ordenação por placa |
 | `/estatisticas` | Estatísticas das sessões |
 | `/relatorio` | Resumo e dados das sessões |
 
@@ -110,4 +119,5 @@ Abra no navegador o endereço local mostrado no terminal, normalmente `http://12
 
 - A aplicação inicia em modo de depuração (`debug=True`), adequado para desenvolvimento local.
 - As sessões ficam em memória e voltam aos valores iniciais a cada reinicialização.
-- A simulação altera o status da sessão em uma thread após cinco segundos.
+- A capacidade da bateria é solicitada para estimar a energia correspondente à porcentagem carregada.
+- As recargas em andamento e as sessões concluídas são mantidas em memória enquanto o servidor está ligado.

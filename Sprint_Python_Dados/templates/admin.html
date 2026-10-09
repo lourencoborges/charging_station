@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Área do ADM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>Área do ADM</h1>
+        <p>Gerencie e consulte as sessões de recarga.</p>
+        <nav class="menu">
+            <a href="{{ url_for('nova_sessao') }}"><button>Cadastrar sessão</button></a>
+            <a href="{{ url_for('listar_sessoes_web') }}"><button>Listar sessões</button></a>
+            <a href="{{ url_for('buscar_sessao_web') }}"><button>Buscar por placa</button></a>
+            <a href="{{ url_for('ordenar_sessoes_web') }}"><button>Ordenar sessões</button></a>
+            <a href="{{ url_for('estatisticas_web') }}"><button>Estatísticas</button></a>
+            <a href="{{ url_for('relatorio_web') }}"><button>Resumo final</button></a>
+        </nav>
+        <a href="{{ url_for('inicio') }}"><button type="button">Voltar</button></a>
+    </main>
+</body>
+</html>

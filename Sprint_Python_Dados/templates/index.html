@@ -2,47 +2,18 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Estação de Recarga</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-
-    <div class="container">
-
+    <main class="container">
         <h1>ESTAÇÃO DE RECARGA</h1>
-
+        <p>Escolha como deseja acessar o sistema.</p>
         <div class="menu">
-
-            <a href="/nova-sessao">
-                <button>Nova sessão de recarga</button>
-            </a>
-
-            <a href="/listar-sessoes">
-                <button>Listar sessões</button>
-            </a>
-
-            <a href="/buscar-sessao">
-                <button>Buscar sessão</button>
-            </a>
-
-            <a href="/ordenar-sessoes">
-                <button>Ordenar sessões</button>
-            </a>
-
-            <a href="/estatisticas">
-                <button>Estatísticas</button>
-            </a>
-
-            <a href="/relatorio">
-                <button>Resumo final</button>
-            </a>
-
+            <a href="{{ url_for('area_usuario') }}"><button>Área do usuário</button></a>
+            <a href="{{ url_for('area_admin') }}"><button>Área do ADM</button></a>
         </div>
-
-    </div>
-
+    </main>
 </body>
-
 </html>

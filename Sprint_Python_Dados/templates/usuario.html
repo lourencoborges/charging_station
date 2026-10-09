@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Área do usuário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>Iniciar recarga</h1>
+        <p>Informe os dados do veículo. A bateria simulada avança 3 pontos percentuais a cada segundo.</p>
+        <form id="form-recarga">
+            <label for="placa">Placa do veículo</label>
+            <input id="placa" name="placa" minlength="7" maxlength="7" pattern="[A-Za-z0-9]{7}" placeholder="ABC1D23" title="Use 7 letras ou números." required>
+
+            <label for="capacidade">Capacidade da bateria (kWh)</label>
+            <input id="capacidade" name="capacidade_bateria" type="number" min="0.1" step="0.1" required>
+
+            <label for="inicial">Bateria inicial (%)</label>
+            <input id="inicial" name="bateria_inicial" type="number" min="0" max="100" step="1" required>
+
+            <label for="final">Porcentagem desejada (%)</label>
+            <input id="final" name="bateria_final" type="number" min="1" max="100" step="1" required>
+            <button type="submit">Iniciar recarga</button>
+            <button id="sessao-aleatoria" type="button">Fazer uma sessão aleatória</button>
+        </form>
+        <p id="mensagem" role="status"></p>
+        <section id="recarga-ativa" class="sessao" hidden>
+            <h2>Recarga em andamento</h2>
+            <p id="dados-veiculo"></p>
+            <p>Bateria: <strong id="porcentagem-atual">0%</strong></p>
+            <div class="barra-bateria" role="progressbar" aria-label="Carga atual da bateria" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div id="progresso-bateria"></div>
+            </div>
+            <p>Tempo carregando: <strong id="cronometro">00:00:00</strong></p>
+            <p id="objetivo-bateria"></p>
+            <button id="finalizar-antes" type="button">Finalizar recarga</button>
+            <button id="tentar-salvar" type="button" hidden>Tentar salvar novamente</button>
+        </section>
+        <section id="recarga-finalizada" class="sessao" hidden>
+            <h2>Recarga registrada</h2>
+            <p id="tempo-final"></p>
+        </section>
+        <a href="{{ url_for('inicio') }}"><button type="button">Voltar</button></a>
+    </main>
+    <script>
+        const form = document.getElementById("form-recarga");
+        const mensagem = document.getElementById("mensagem");
+        const painel = document.getElementById("recarga-ativa");
+        const cronometro = document.getElementById("cronometro");
+        let sessaoId = null;
+        let inicioLocal = null;
+        let intervalo = null;
+        let percentualAtual = 0;
+        let percentualObjetivo = 0;
+        let recargaFinalizada = false;
+        let statusFinalizacaoPendente = null;
+
+        function formatarTempo(segundos) {
+            segundos = Math.max(0, Math.floor(segundos));
+            const horas = Math.floor(segundos / 3600).toString().padStart(2, "0");
+            const minutos = Math.floor((segundos % 3600) / 60).toString().padStart(2, "0");
+            const resto = (segundos % 60).toString().padStart(2, "0");
+            return `${horas}:${minutos}:${resto}`;
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            mensagem.textContent = "";
+            try {
+                const resposta = await fetch("{{ url_for('iniciar_recarga_usuario') }}", {
+                    method: "POST",
+                    body: new FormData(form)
+                });
+                const dados = await resposta.json();
+                if (!resposta.ok) {
+                    mensagem.textContent = dados.erro || "Confira os dados informados.";
+                    return;
+                }
+                iniciarAcompanhamento(dados);
+            } catch (erro) {
+                mensagem.textContent = "Não foi possível iniciar a recarga. Confira a conexão e tente novamente.";
+                return;
+            }
+        });
+
+        document.getElementById("sessao-aleatoria").addEventListener("click", async () => {
+            mensagem.textContent = "";
+            try {
+                const resposta = await fetch("{{ url_for('iniciar_recarga_aleatoria') }}", { method: "POST" });
+                const dados = await resposta.json();
+                if (!resposta.ok) {
+                    mensagem.textContent = dados.erro || "Não foi possível criar uma sessão aleatória.";
+                    return;
+                }
+                iniciarAcompanhamento(dados);
+            } catch (erro) {
+                mensagem.textContent = "Falha ao criar a sessão aleatória. Verifique a conexão e tente novamente.";
+            }
+        });
+
+        function iniciarAcompanhamento(dados) {
+            sessaoId = dados.sessao_id;
+            inicioLocal = Date.now();
+            percentualAtual = Number.parseInt(dados.bateria_inicial, 10);
+            percentualObjetivo = Number.parseInt(dados.bateria_final, 10);
+            form.hidden = true;
+            painel.hidden = false;
+            document.getElementById("dados-veiculo").textContent = `Placa ${dados.placa} · Bateria ${dados.capacidade_bateria_kwh} kWh`;
+            document.getElementById("objetivo-bateria").textContent = `Objetivo: ${percentualObjetivo}%`;
+            atualizarBateria();
+            intervalo = setInterval(async () => {
+                cronometro.textContent = formatarTempo((Date.now() - inicioLocal) / 1000);
+                percentualAtual = Math.min(percentualObjetivo, percentualAtual + 3);
+                atualizarBateria();
+                if (percentualAtual >= percentualObjetivo) {
+                    clearInterval(intervalo);
+                    await concluirRecarga("Concluída");
+                }
+            }, 1000);
+        }
+
+        function atualizarBateria() {
+            const valor = percentualAtual;
+            document.getElementById("porcentagem-atual").textContent = `${valor}%`;
+            document.querySelector(".barra-bateria").setAttribute("aria-valuenow", valor);
+            document.getElementById("progresso-bateria").style.width = `${valor}%`;
+        }
+
+        async function concluirRecarga(status) {
+            const tentarSalvar = document.getElementById("tentar-salvar");
+            statusFinalizacaoPendente = status;
+            tentarSalvar.disabled = true;
+            try {
+                const resposta = await fetch(`/usuario/finalizar/${sessaoId}`, {
+                    method: "POST",
+                    body: new URLSearchParams({ status })
+                });
+                const dados = await resposta.json();
+                if (!resposta.ok) {
+                    mensagem.textContent = dados.erro || "Não foi possível finalizar a recarga.";
+                    tentarSalvar.hidden = false;
+                    return;
+                }
+                recargaFinalizada = true;
+                painel.hidden = true;
+                tentarSalvar.hidden = true;
+                document.getElementById("recarga-finalizada").hidden = false;
+                document.getElementById("tempo-final").textContent = `Status: ${dados.status}. Tempo carregando: ${formatarTempo(dados.tempo_segundos)}. A sessão foi enviada para a lista.`;
+            } catch (erro) {
+                mensagem.textContent = "Falha ao salvar a sessão. Verifique a conexão e tente novamente.";
+                tentarSalvar.hidden = false;
+            } finally {
+                tentarSalvar.disabled = false;
+            }
+        }
+
+        document.getElementById("finalizar-antes").addEventListener("click", () => {
+            clearInterval(intervalo);
+            concluirRecarga("Finalizado antes da hora");
+        });
+
+        document.getElementById("tentar-salvar").addEventListener("click", () => {
+            concluirRecarga(statusFinalizacaoPendente || "Finalizado antes da hora");
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (!sessaoId || recargaFinalizada) {
+                return;
+            }
+            const status = statusFinalizacaoPendente || "Incompleto";
+            const dados = new URLSearchParams({ status });
+            recargaFinalizada = true;
+            const enviado = navigator.sendBeacon(`/usuario/finalizar/${sessaoId}`, dados);
+            if (!enviado) {
+                fetch(`/usuario/finalizar/${sessaoId}`, {
+                    method: "POST",
+                    body: dados,
+                    keepalive: true
+                });
+            }
+        });
+
+        window.addEventListener("pageshow", (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
